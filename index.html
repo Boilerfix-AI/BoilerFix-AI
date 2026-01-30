@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BoilerFix AI PRO v3.0 | Component Testing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 24px;
+            padding: 48px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .logo { text-align: center; font-size: 4em; margin-bottom: 16px; }
+        
+        h1 {
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 32px; }
+        
+        .demo-info {
+            background: #dbeafe;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+        }
+        
+        .form-group { margin-bottom: 20px; }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #0f172a;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1em;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3); }
+        
+        .hidden { display: none !important; }
+        
+        .app-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 1400px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .version-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .user-info {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 0.85em;
+            color: #64748b;
+        }
+        
+        .user-info a { color: var(--danger); text-decoration: none; font-weight: 600; }
+        
+        .safety-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid var(--warning);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .safety-warning h3 { color: #b45309; margin-bottom: 8px; }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        .btn-start { background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%); color: white; padding: 14px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; }
+        .btn-test { background: linear-gradient(135deg, var(--secondary) 0%, #059669 100%); color: white; padding: 14px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; }
+        .btn-reset { background: var(--danger); color: white; padding: 14px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; }
+        
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        button:disabled { background: #cbd5e0 !important; cursor: not-allowed; transform: none !important; }
+        
+        .output {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            min-height: 300px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .diagnostic-section {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .component-test-section {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 3px solid var(--secondary);
+            padding: 24px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .component-test-section h3 {
+            color: #065f46;
+            margin-bottom: 16px;
+            font-size: 1.3em;
+        }
+        
+        .test-detail {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .test-detail strong {
+            display: block;
+            color: #0f172a;
+            margin-bottom: 8px;
+            font-size: 1.05em;
+        }
+        
+        .test-procedure {
+            background: #0f172a;
+            color: #10b981;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            margin: 12px 0;
+        }
+        
+        .pass-fail {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 12px 0;
+        }
+        
+        .pass-box {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .fail-box {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .safety-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .badge-high { background: #fee2e2; color: #991b1b; }
+        .badge-medium { background: #fef3c7; color: #92400e; }
+        .badge-critical { background: #fce7f3; color: #9f1239; }
+        .badge-low { background: #d1fae5; color: #065f46; }
+    </style>
+</head>
+<body>
+    <div id="login-screen" class="login-container">
+        <div class="logo">🔧</div>
+        <h1>BoilerFix AI</h1>
+        <p class="subtitle">Professional Component Testing</p>
+        
+        <div class="demo-info">
+            <strong>🎮 Demo Login</strong><br>
+            Email: <strong>demo@boilerfix.com</strong><br>
+            Password: <strong>demo1234</strong>
+        </div>
+        
+        <form onsubmit="return login(event)">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" value="demo@boilerfix.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" value="demo1234" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Sign In</button>
+        </form>
+    </div>
+    
+    <div id="app-screen" class="app-container hidden">
+        <div class="header">
+            <h1>🔧 BoilerFix AI <span class="version-badge">PRO v3.0</span></h1>
+            <p class="subtitle">37 Boilers | 198 Fault Codes | Component Testing Database</p>
+            <div class="user-info">
+                Logged in: <strong id="user-name"></strong> | 
+                Gas Safe: <strong id="user-gassafe"></strong> | 
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+        
+        <div class="safety-warning">
+            <h3>⚠️ Gas Safe Registered Engineers Only</h3>
+            <p>Professional diagnostics with exact voltage/resistance specifications and component testing procedures.</p>
+        </div>
+        
+        <div class="form-group">
+            <label>🔧 Select Boiler Make & Model</label>
+            <select id="boiler-select" onchange="loadFaultCodes()">
+                <option value="">-- Select boiler --</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>❗ Select Fault Code</label>
+            <select id="fault-select">
+                <option value="">-- First select boiler above --</option>
+            </select>
+        </div>
+        
+        <div class="controls">
+            <button class="btn-start" onclick="startDiagnostic()">▶ View Diagnostic</button>
+            <button class="btn-test" onclick="showComponentTest()" disabled id="btn-test">🔬 Component Test</button>
+            <button class="btn-reset" onclick="resetDiagnostic()">🔄 Reset</button>
+        </div>
+        
+        <div class="output" id="diagnostic-output">
+            <h3>Ready</h3>
+            <p style="color: #64748b;">Select boiler and fault code, then click "▶ View Diagnostic"</p>
+        </div>
+    </div>
+
+    <script>
+        const DATABASE = {"version": "3.0", "lastUpdated": "2025-01-29", "dataSource": "Enhanced Google Sheets with Component Testing", "boilers": {"ideal-logic-c-30": {"manufacturer": "Ideal", "model": "Logic C 30", "type": "Combi", "fuelType": "Natural Gas"}, "worcester-bosch-greenstar-i-24-30": {"manufacturer": "Worcester Bosch", "model": "Greenstar i 24/30", "type": "Combi", "fuelType": "Natural Gas"}, "worcester-bosch-greenstar-cdi-classic": {"manufacturer": "Worcester Bosch", "model": "Greenstar CDi Classic", "type": "Combi", "fuelType": "Natural Gas"}, "worcester-bosch-greenstar-8000": {"manufacturer": "Worcester Bosch", "model": "Greenstar 8000", "type": "Combi", "fuelType": "Natural Gas"}, "vaillant-ecotec-plus": {"manufacturer": "Vaillant", "model": "ecoTEC Plus", "type": "Combi", "fuelType": "Natural Gas"}, "vaillant-ecotec-pro": {"manufacturer": "Vaillant", "model": "ecoTEC Pro", "type": "Combi", "fuelType": "Natural Gas"}, "baxi-duo-tec-combi": {"manufacturer": "Baxi", "model": "Duo-tec Combi", "type": "Combi", "fuelType": "Natural Gas"}, "baxi-platinum+-combi": {"manufacturer": "Baxi", "model": "Platinum+ Combi", "type": "Combi", "fuelType": "Natural Gas"}, "baxi-ecoblue-advance": {"manufacturer": "Baxi", "model": "EcoBlue Advance", "type": "Combi", "fuelType": "Natural Gas"}, "baxi-600-combi": {"manufacturer": "Baxi", "model": "600 Combi", "type": "Combi", "fuelType": "Natural Gas"}, "baxi-800-combi": {"manufacturer": "Baxi", "model": "800 Combi", "type": "Combi", "fuelType": "Natural Gas"}, "viessmann-vitodens-100-w": {"manufacturer": "Viessmann", "model": "Vitodens 100-W", "type": "Combi", "fuelType": "Natural Gas"}, "viessmann-vitodens-200": {"manufacturer": "Viessmann", "model": "Vitodens 200", "type": "Combi", "fuelType": "Natural Gas"}, "viessmann-vitocrossal-300": {"manufacturer": "Viessmann", "model": "Vitocrossal 300", "type": "Combi", "fuelType": "Natural Gas"}, "alpha-e-tec": {"manufacturer": "Alpha", "model": "E-Tec", "type": "Combi", "fuelType": "Natural Gas"}, "alpha-e-tec-plus": {"manufacturer": "Alpha", "model": "E-Tec Plus", "type": "Combi", "fuelType": "Natural Gas"}, "alpha-e-tec-nx-28": {"manufacturer": "Alpha", "model": "E-Tec NX 28", "type": "Combi", "fuelType": "Natural Gas"}, "alpha-evoke": {"manufacturer": "Alpha", "model": "Evoke", "type": "Combi", "fuelType": "Natural Gas"}, "alpha-protec-plus": {"manufacturer": "Alpha", "model": "Protec Plus", "type": "Combi", "fuelType": "Natural Gas"}, "potterton-promax-combi": {"manufacturer": "Potterton", "model": "Promax Combi", "type": "Combi", "fuelType": "Natural Gas"}, "potterton-promax-ultra": {"manufacturer": "Potterton", "model": "Promax Ultra", "type": "Combi", "fuelType": "Natural Gas"}, "potterton-gold---titanium": {"manufacturer": "Potterton", "model": "Gold / Titanium", "type": "Combi", "fuelType": "Natural Gas"}, "potterton-assure-combi": {"manufacturer": "Potterton", "model": "Assure Combi", "type": "Combi", "fuelType": "Natural Gas"}, "glow-worm-energy---ultimate": {"manufacturer": "Glow-worm", "model": "Energy / Ultimate", "type": "Combi", "fuelType": "Natural Gas"}, "glow-worm-betacom": {"manufacturer": "Glow-worm", "model": "Betacom", "type": "Combi", "fuelType": "Natural Gas"}, "intergas-rapid---compact": {"manufacturer": "Intergas", "model": "Rapid / Compact", "type": "Combi", "fuelType": "Natural Gas"}, "main-combi-eco---elite": {"manufacturer": "Main", "model": "Combi Eco / Elite", "type": "Combi", "fuelType": "Natural Gas"}, "ariston-clas-one---net": {"manufacturer": "Ariston", "model": "Clas One / Net", "type": "Combi", "fuelType": "Natural Gas"}, "glow-worm-ultracom-2-30cxi": {"manufacturer": "Glow-worm", "model": "Ultracom 2 30cxi", "type": "Combi", "fuelType": "Natural Gas"}, "glow-worm-ultracom-2-38cxi": {"manufacturer": "Glow-worm", "model": "Ultracom 2 38cxi", "type": "Combi", "fuelType": "Natural Gas"}, "glow-worm-ultracom-30cx": {"manufacturer": "Glow-worm", "model": "Ultracom 30cx", "type": "Combi", "fuelType": "Natural Gas"}, "glow-worm-ultracom-18sxi": {"manufacturer": "Glow-worm", "model": "Ultracom 18sxi", "type": "Combi", "fuelType": "Natural Gas"}, "glow-worm-flexicom-30cx": {"manufacturer": "Glow-worm", "model": "Flexicom 30cx", "type": "Combi", "fuelType": "Natural Gas"}, "ideal-logic-heat-only": {"manufacturer": "Ideal", "model": "Logic Heat Only", "type": "Combi", "fuelType": "Natural Gas"}, "ideal-logic-combi-30": {"manufacturer": "Ideal", "model": "Logic Combi 30", "type": "Combi", "fuelType": "Natural Gas"}, "ideal-logic-2-c-30": {"manufacturer": "Ideal", "model": "Logic 2 C 30", "type": "Combi", "fuelType": "Natural Gas"}, "vaillant-ecotec-pro-28": {"manufacturer": "Vaillant", "model": "ecoTEC Pro 28", "type": "Combi", "fuelType": "Natural Gas"}}, "faultCodes": {"ideal-logic-c-30": {"F": {"code": "F", "description": "Boiler operating in frost mode", "severity": "low", "category": "general", "canUserReset": false, "diagnosticSteps": ["N/A – normal protective state"], "possibleCauses": ["Ambient temperature <5°C"], "solution": "No action required – normal operation", "componentTest": {"name": "General Diagnostic", "equipment": "Basic tools; Multimeter", "expectedVoltage": "See service manual", "expectedResistance": "See service manual", "procedure": "Follow diagnostic steps above; Refer to manufacturer service manual for specific component tests", "passFail": "Component operates as expected per service manual specifications", "safety": "⚠️ Gas Safe registered engineers only; 230V AC present; Follow all manufacturer safety procedures"}}}}};
+
+        // NOTE: For production integration, you should fetch the JSON file via XHR/fetch instead of embedding.
+
+        // Minimal frontend logic to load boiler list from DATABASE and demo login
+        function populateBoilers() {
+            const select = document.getElementById('boiler-select');
+            const boilers = DATABASE.boilers;
+            Object.keys(boilers).forEach(key => {
+                const b = boilers[key];
+                const opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = b.manufacturer + ' - ' + b.model;
+                select.appendChild(opt);
+            });
+        }
+
+        function loadFaultCodes() {
+            const boilerKey = document.getElementById('boiler-select').value;
+            const faultSelect = document.getElementById('fault-select');
+            faultSelect.innerHTML = '';
+            if (!boilerKey) {
+                const opt = document.createElement('option');
+                opt.textContent = '-- First select boiler above --';
+                faultSelect.appendChild(opt);
+                document.getElementById('btn-test').disabled = true;
+                return;
+            }
+            const codes = DATABASE.faultCodes[boilerKey] || {};
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = '';
+            defaultOpt.textContent = '-- Select fault code --';
+            faultSelect.appendChild(defaultOpt);
+            Object.keys(codes).forEach(codeKey => {
+                const c = codes[codeKey];
+                const opt = document.createElement('option');
+                opt.value = codeKey;
+                opt.textContent = c.code + ' — ' + c.description;
+                faultSelect.appendChild(opt);
+            });
+            document.getElementById('btn-test').disabled = false;
+        }
+
+        function login(e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-screen').classList.remove('hidden');
+            document.getElementById('user-name').textContent = email;
+            document.getElementById('user-gassafe').textContent = 'Yes (Demo)';
+            populateBoilers();
+        }
+
+        function logout() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('app-screen').classList.add('hidden');
+            document.getElementById('email').value = 'demo@boilerfix.com';
+            document.getElementById('password').value = 'demo1234';
+        }
+
+        function startDiagnostic() {
+            const boilerKey = document.getElementById('boiler-select').value;
+            const faultKey = document.getElementById('fault-select').value;
+            const output = document.getElementById('diagnostic-output');
+            if (!boilerKey || !faultKey) {
+                output.innerHTML = '<h3 style="color: #ef4444;">Select boiler and fault code</h3>';
+                return;
+            }
+            const code = DATABASE.faultCodes[boilerKey][faultKey];
+            output.innerHTML = `<h3>${code.code} — ${code.description}</h3><p><strong>Severity:</strong> ${code.severity}</p><p><strong>Category:</strong> ${code.category}</p><h4>Diagnostic Steps</h4><ol>${code.diagnosticSteps.map(s => '<li>'+s+'</li>').join('')}</ol><h4>Possible Causes</h4><ul>${code.possibleCauses.map(c => '<li>'+c+'</li>').join('')}</ul><h4>Solution</h4><p>${code.solution}</p>`;
+        }
+
+        function showComponentTest() {
+            const boilerKey = document.getElementById('boiler-select').value;
+            const faultKey = document.getElementById('fault-select').value;
+            const output = document.getElementById('diagnostic-output');
+            if (!boilerKey || !faultKey) {
+                output.innerHTML = '<h3 style="color: #ef4444;">Select boiler and fault code</h3>';
+                return;
+            }
+            const component = DATABASE.faultCodes[boilerKey][faultKey].componentTest;
+            output.innerHTML = `<div class="component-test-section"><h3>${component.name}</h3><div class="test-detail"><strong>Equipment</strong><div>${component.equipment}</div></div><div class="test-detail"><strong>Expected Voltage</strong><div>${component.expectedVoltage}</div></div><div class="test-detail"><strong>Expected Resistance</strong><div>${component.expectedResistance}</div></div><div class="test-procedure">${component.procedure}</div><div class="safety-box"><strong>Safety</strong><div>${component.safety}</div></div></div>`;
+        }
+
+        function resetDiagnostic() {
+            document.getElementById('boiler-select').value = '';
+            document.getElementById('fault-select').innerHTML = '<option>-- First select boiler above --</option>';
+            document.getElementById('diagnostic-output').innerHTML = '<h3>Ready</h3><p style="color: #64748b;">Select boiler and fault code, then click "▶ View Diagnostic"</p>';
+            document.getElementById('btn-test').disabled = true;
+        }
+
+        // Initialize demo state
+        populateBoilers();
+    </script>
+</body>
+</html>
