@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BoilerFix AI - Database Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f1f5f9;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 32px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #64748b;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .list {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .list-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        
+        .list-item:hover {
+            border-color: #3b82f6;
+        }
+        
+        .list-item.active {
+            background: #dbeafe;
+            border-color: #3b82f6;
+        }
+        
+        .editor {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: #0f172a;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95em;
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .badge-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .badge-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-low {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .code-block {
+            background: #0f172a;
+            color: #10b981;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+        }
+        
+        .array-list {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+        }
+        
+        .array-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .array-item input {
+            flex: 1;
+        }
+        
+        .array-item button {
+            padding: 8px 12px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 BoilerFix AI - Database Administrator</h1>
+        <p class="subtitle">Manage fault codes, diagnostics, and technical specifications</p>
+        
+        <!-- STATS -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="stat-boilers">3</div>
+                <div class="stat-label">Boiler Models</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-faults">63</div>
+                <div class="stat-label">Fault Codes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-diagnostics">12</div>
+                <div class="stat-label">Procedures</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stat-updated">Today</div>
+                <div class="stat-label">Last Updated</div>
+            </div>
+        </div>
+        
+        <!-- TABS -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('faults')">Fault Codes</button>
+            <button class="tab" onclick="showTab('diagnostics')">Diagnostic Procedures</button>
+            <button class="tab" onclick="showTab('boilers')">Boiler Models</button>
+            <button class="tab" onclick="showTab('export')">Export/Import</button>
+        </div>
+        
+        <!-- FAULT CODES TAB -->
+        <div id="faults-tab" class="tab-content active">
+            <div class="grid">
+                <div class="list">
+                    <h3 style="margin-bottom: 16px;">Fault Codes</h3>
+                    <div id="fault-list"></div>
+                </div>
+                
+                <div class="editor" id="fault-editor">
+                    <h3 style="margin-bottom: 16px;">Edit Fault Code</h3>
+                    <p style="color: #64748b;">Select a fault code from the list to edit</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DIAGNOSTICS TAB -->
+        <div id="diagnostics-tab" class="tab-content">
+            <div class="grid">
+                <div class="list">
+                    <h3 style="margin-bottom: 16px;">Diagnostic Procedures</h3>
+                    <div id="diagnostic-list"></div>
+                </div>
+                
+                <div class="editor" id="diagnostic-editor">
+                    <h3 style="margin-bottom: 16px;">Edit Diagnostic Procedure</h3>
+                    <p style="color: #64748b;">Select a procedure from the list to edit</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- BOILERS TAB -->
+        <div id="boilers-tab" class="tab-content">
+            <div class="grid">
+                <div class="list">
+                    <h3 style="margin-bottom: 16px;">Boiler Models</h3>
+                    <div id="boiler-list"></div>
+                </div>
+                
+                <div class="editor" id="boiler-editor">
+                    <h3 style="margin-bottom: 16px;">Edit Boiler Model</h3>
+                    <p style="color: #64748b;">Select a boiler from the list to edit</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- EXPORT TAB -->
+        <div id="export-tab" class="tab-content">
+            <h3 style="margin-bottom: 16px;">Export Database</h3>
+            <p style="color: #64748b; margin-bottom: 16px;">Download the entire database as JSON for backup or sharing</p>
+            
+            <button class="btn btn-primary" onclick="exportDatabase()">📥 Download Database JSON</button>
+            
+            <div style="margin: 32px 0;">
+                <h3 style="margin-bottom: 16px;">Import Database</h3>
+                <p style="color: #64748b; margin-bottom: 16px;">Upload a JSON database file to replace current data</p>
+                
+                <input type="file" id="import-file" accept=".json" style="margin-bottom: 16px;">
+                <button class="btn btn-success" onclick="importDatabase()">📤 Import Database</button>
+            </div>
+            
+            <div style="margin-top: 32px;">
+                <h3 style="margin-bottom: 16px;">Current Database Preview</h3>
+                <div class="code-block" id="json-preview"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load database from localStorage or use default
+        let database = JSON.parse(localStorage.getItem('boilerfix_database') || 'null');
+        
+        // If no database, fetch from boiler-database.json file
+        if (!database) {
+            // In production, this would fetch from server
+            // For demo, we'll use a sample structure
+            database = {
+                version: "1.0",
+                lastUpdated: new Date().toISOString().split('T')[0],
+                boilers: {},
+                faultCodes: {
+                    "ideal-logic-c30": {},
+                    "glowworm-ultracom2-30cxi": {}
+                },
+                diagnosticProcedures: {},
+                testingProcedures: {}
+            };
+        }
+        
+        let currentTab = 'faults';
+        let selectedFault = null;
+        let selectedDiagnostic = null;
+        let selectedBoiler = null;
+        
+        // Initialize
+        updateStats();
+        loadFaultList();
+        updateJsonPreview();
+        
+        function showTab(tab) {
+            currentTab = tab;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            
+            // Load appropriate list
+            if (tab === 'faults') loadFaultList();
+            if (tab === 'diagnostics') loadDiagnosticList();
+            if (tab === 'boilers') loadBoilerList();
+            if (tab === 'export') updateJsonPreview();
+        }
+        
+        function updateStats() {
+            let totalFaults = 0;
+            for (let boiler in database.faultCodes) {
+                totalFaults += Object.keys(database.faultCodes[boiler]).length;
+            }
+            
+            document.getElementById('stat-boilers').textContent = Object.keys(database.boilers).length;
+            document.getElementById('stat-faults').textContent = totalFaults;
+            document.getElementById('stat-diagnostics').textContent = Object.keys(database.diagnosticProcedures || {}).length;
+            document.getElementById('stat-updated').textContent = database.lastUpdated;
+        }
+        
+        function loadFaultList() {
+            const listEl = document.getElementById('fault-list');
+            let html = '';
+            
+            for (let boiler in database.faultCodes) {
+                html += `<div style="font-weight: 700; color: #3b82f6; margin: 16px 0 8px 0;">${boiler}</div>`;
+                
+                for (let code in database.faultCodes[boiler]) {
+                    const fault = database.faultCodes[boiler][code];
+                    const severityBadge = fault.severity ? 
+                        `<span class="badge badge-${fault.severity}">${fault.severity}</span>` : '';
+                    
+                    html += `
+                        <div class="list-item" onclick="editFault('${boiler}', '${code}')">
+                            <strong>${code}</strong> ${severityBadge}<br>
+                            <small style="color: #64748b;">${fault.description || 'No description'}</small>
+                        </div>
+                    `;
+                }
+            }
+            
+            listEl.innerHTML = html || '<p style="color: #64748b;">No fault codes found</p>';
+        }
+        
+        function editFault(boiler, code) {
+            const fault = database.faultCodes[boiler][code];
+            const editorEl = document.getElementById('fault-editor');
+            
+            selectedFault = {boiler, code};
+            
+            editorEl.innerHTML = `
+                <h3 style="margin-bottom: 16px;">Edit Fault Code: ${code}</h3>
+                
+                <div class="form-group">
+                    <label>Boiler Model</label>
+                    <input type="text" id="edit-boiler" value="${boiler}" readonly style="background: #f1f5f9;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Fault Code</label>
+                    <input type="text" id="edit-code" value="${code}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="edit-description">${fault.description || ''}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Severity</label>
+                    <select id="edit-severity">
+                        <option value="low" ${fault.severity === 'low' ? 'selected' : ''}>Low</option>
+                        <option value="medium" ${fault.severity === 'medium' ? 'selected' : ''}>Medium</option>
+                        <option value="high" ${fault.severity === 'high' ? 'selected' : ''}>High</option>
+                        <option value="critical" ${fault.severity === 'critical' ? 'selected' : ''}>Critical</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Category</label>
+                    <input type="text" id="edit-category" value="${fault.category || ''}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Can User Reset?</label>
+                    <select id="edit-reset">
+                        <option value="true" ${fault.canUserReset ? 'selected' : ''}>Yes</option>
+                        <option value="false" ${!fault.canUserReset ? 'selected' : ''}>No</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Immediate Action</label>
+                    <textarea id="edit-action">${fault.immediateAction || ''}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Technical Details (JSON format)</label>
+                    <textarea id="edit-technical" style="font-family: monospace;">${JSON.stringify(fault.technicalDetails || {}, null, 2)}</textarea>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="saveFault()">💾 Save Changes</button>
+                    <button class="btn btn-danger" onclick="deleteFault()">🗑️ Delete</button>
+                </div>
+            `;
+        }
+        
+        function saveFault() {
+            if (!selectedFault) return;
+            
+            const {boiler, code} = selectedFault;
+            
+            try {
+                const updatedFault = {
+                    code: document.getElementById('edit-code').value,
+                    description: document.getElementById('edit-description').value,
+                    severity: document.getElementById('edit-severity').value,
+                    category: document.getElementById('edit-category').value,
+                    canUserReset: document.getElementById('edit-reset').value === 'true',
+                    immediateAction: document.getElementById('edit-action').value,
+                    technicalDetails: JSON.parse(document.getElementById('edit-technical').value)
+                };
+                
+                database.faultCodes[boiler][code] = updatedFault;
+                database.lastUpdated = new Date().toISOString().split('T')[0];
+                
+                localStorage.setItem('boilerfix_database', JSON.stringify(database));
+                
+                alert('✅ Fault code saved successfully!');
+                loadFaultList();
+                updateStats();
+                
+            } catch (error) {
+                alert('❌ Error saving: ' + error.message);
+            }
+        }
+        
+        function deleteFault() {
+            if (!selectedFault) return;
+            
+            if (confirm('Delete this fault code?')) {
+                const {boiler, code} = selectedFault;
+                delete database.faultCodes[boiler][code];
+                database.lastUpdated = new Date().toISOString().split('T')[0];
+                
+                localStorage.setItem('boilerfix_database', JSON.stringify(database));
+                
+                document.getElementById('fault-editor').innerHTML = '<p>Fault code deleted</p>';
+                loadFaultList();
+                updateStats();
+            }
+        }
+        
+        function loadDiagnosticList() {
+            const listEl = document.getElementById('diagnostic-list');
+            let html = '';
+            
+            for (let id in database.diagnosticProcedures) {
+                const proc = database.diagnosticProcedures[id];
+                html += `
+                    <div class="list-item" onclick="editDiagnostic('${id}')">
+                        <strong>${proc.name || id}</strong><br>
+                        <small style="color: #64748b;">${proc.estimatedTime || 'No time estimate'}</small>
+                    </div>
+                `;
+            }
+            
+            listEl.innerHTML = html || '<p style="color: #64748b;">No procedures found</p>';
+        }
+        
+        function editDiagnostic(id) {
+            const proc = database.diagnosticProcedures[id];
+            const editorEl = document.getElementById('diagnostic-editor');
+            
+            editorEl.innerHTML = `
+                <h3 style="margin-bottom: 16px;">Edit: ${proc.name}</h3>
+                
+                <div class="form-group">
+                    <label>Procedure ID</label>
+                    <input type="text" value="${id}" readonly style="background: #f1f5f9;">
+                </div>
+                
+                <div class="form-group">
+                    <label>Procedure Name</label>
+                    <input type="text" id="proc-name" value="${proc.name || ''}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Estimated Time</label>
+                    <input type="text" id="proc-time" value="${proc.estimatedTime || ''}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Steps (JSON format - array of step objects)</label>
+                    <textarea id="proc-steps" style="min-height: 300px; font-family: monospace;">${JSON.stringify(proc.steps || [], null, 2)}</textarea>
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="saveDiagnostic('${id}')">💾 Save Changes</button>
+                </div>
+            `;
+        }
+        
+        function saveDiagnostic(id) {
+            try {
+                database.diagnosticProcedures[id].name = document.getElementById('proc-name').value;
+                database.diagnosticProcedures[id].estimatedTime = document.getElementById('proc-time').value;
+                database.diagnosticProcedures[id].steps = JSON.parse(document.getElementById('proc-steps').value);
+                database.lastUpdated = new Date().toISOString().split('T')[0];
+                
+                localStorage.setItem('boilerfix_database', JSON.stringify(database));
+                
+                alert('✅ Diagnostic procedure saved!');
+                loadDiagnosticList();
+                
+            } catch (error) {
+                alert('❌ Error: ' + error.message);
+            }
+        }
+        
+        function loadBoilerList() {
+            const listEl = document.getElementById('boiler-list');
+            let html = '';
+            
+            for (let id in database.boilers) {
+                const boiler = database.boilers[id];
+                html += `
+                    <div class="list-item" onclick="editBoiler('${id}')">
+                        <strong>${boiler.manufacturer} ${boiler.model}</strong><br>
+                        <small style="color: #64748b;">${boiler.type} | ${boiler.output}</small>
+                    </div>
+                `;
+            }
+            
+            listEl.innerHTML = html || '<p style="color: #64748b;">No boilers found</p>';
+        }
+        
+        function editBoiler(id) {
+            const boiler = database.boilers[id];
+            const editorEl = document.getElementById('boiler-editor');
+            
+            editorEl.innerHTML = `
+                <h3 style="margin-bottom: 16px;">Edit: ${boiler.model}</h3>
+                
+                <div class="form-group">
+                    <label>Manufacturer</label>
+                    <input type="text" id="boiler-mfr" value="${boiler.manufacturer || ''}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Model</label>
+                    <input type="text" id="boiler-model" value="${boiler.model || ''}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Type</label>
+                    <input type="text" id="boiler-type" value="${boiler.type || ''}">
+                </div>
+                
+                <div class="form-group">
+                    <label>Output</label>
+                    <input type="text" id="boiler-output" value="${boiler.output || ''}">
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="saveBoiler('${id}')">💾 Save Changes</button>
+                </div>
+            `;
+        }
+        
+        function saveBoiler(id) {
+            database.boilers[id].manufacturer = document.getElementById('boiler-mfr').value;
+            database.boilers[id].model = document.getElementById('boiler-model').value;
+            database.boilers[id].type = document.getElementById('boiler-type').value;
+            database.boilers[id].output = document.getElementById('boiler-output').value;
+            database.lastUpdated = new Date().toISOString().split('T')[0];
+            
+            localStorage.setItem('boilerfix_database', JSON.stringify(database));
+            
+            alert('✅ Boiler saved!');
+            loadBoilerList();
+        }
+        
+        function exportDatabase() {
+            const json = JSON.stringify(database, null, 2);
+            const blob = new Blob([json], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `boilerfix-database-${database.lastUpdated}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+        
+        function importDatabase() {
+            const file = document.getElementById('import-file').files[0];
+            if (!file) {
+                alert('Please select a file');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    database = JSON.parse(e.target.result);
+                    localStorage.setItem('boilerfix_database', JSON.stringify(database));
+                    
+                    alert('✅ Database imported successfully!');
+                    location.reload();
+                    
+                } catch (error) {
+                    alert('❌ Error importing: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function updateJsonPreview() {
+            const preview = document.getElementById('json-preview');
+            if (preview) {
+                preview.textContent = JSON.stringify(database, null, 2);
+            }
+        }
+    </script>
+</body>
+</html>

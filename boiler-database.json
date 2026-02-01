@@ -1,0 +1,536 @@
+{
+  "version": "1.0",
+  "lastUpdated": "2025-01-29",
+  "boilers": {
+    "ideal-logic-c30": {
+      "manufacturer": "Ideal Heating",
+      "model": "Logic C30",
+      "type": "Combi",
+      "output": "30kW",
+      "fuelType": "Natural Gas",
+      "yearIntroduced": 2015,
+      "manualURL": "https://www.idealheating.com/downloads/logic-c30-manual.pdf",
+      "commonIssues": [
+        "Low water pressure",
+        "Ignition failure",
+        "Fan faults"
+      ]
+    },
+    "ideal-logic2-c30": {
+      "manufacturer": "Ideal Heating",
+      "model": "Logic 2 C30",
+      "type": "Combi",
+      "output": "30kW",
+      "fuelType": "Natural Gas",
+      "yearIntroduced": 2020,
+      "manualURL": "https://www.idealheating.com/downloads/logic2-c30-manual.pdf",
+      "commonIssues": [
+        "Low water pressure",
+        "PCB faults",
+        "Thermistor issues"
+      ]
+    },
+    "glowworm-ultracom2-30cxi": {
+      "manufacturer": "Glow-worm",
+      "model": "Ultracom2 30CXI",
+      "type": "Combi",
+      "output": "30kW",
+      "fuelType": "Natural Gas",
+      "yearIntroduced": 2012,
+      "manualURL": "https://www.glow-worm.co.uk/downloads/ultracom2-manual.pdf",
+      "commonIssues": [
+        "PCB failures",
+        "Gas valve issues",
+        "Pressure sensor faults"
+      ]
+    }
+  },
+  
+  "faultCodes": {
+    "ideal-logic-c30": {
+      "F1": {
+        "code": "F1",
+        "description": "Low Water Pressure",
+        "severity": "medium",
+        "category": "pressure",
+        "canUserReset": true,
+        "immediateAction": "Check system pressure on gauge - should be 1.0-1.5 bar when cold",
+        "possibleCauses": [
+          "Leak in system",
+          "Pressure relief valve passing",
+          "Expansion vessel failure",
+          "Filling loop not closed properly"
+        ],
+        "technicalDetails": {
+          "triggerCondition": "System pressure below 0.5 bar",
+          "normalOperatingPressure": "1.0-1.5 bar (cold)",
+          "maximumPressure": "3.0 bar",
+          "prv_Opens_At": "3.0 bar"
+        }
+      },
+      "F2": {
+        "code": "F2",
+        "description": "Flame Loss During Operation",
+        "severity": "high",
+        "category": "ignition",
+        "canUserReset": false,
+        "immediateAction": "Check gas supply is on, boiler will attempt to re-ignite automatically",
+        "possibleCauses": [
+          "Gas supply interrupted",
+          "Flame sensing electrode dirty or faulty",
+          "Poor combustion - flue blocked",
+          "Gas valve fault"
+        ],
+        "technicalDetails": {
+          "triggerCondition": "Flame signal lost during burner operation",
+          "ionizationCurrent": "Minimum 2.0µA required",
+          "flameElectrodePosition": "Must be in flame path, 3-5mm from burner",
+          "gasValveVoltage": "230V AC ±10%"
+        }
+      },
+      "F3": {
+        "code": "F3",
+        "description": "Fan Fault / Air Pressure Switch",
+        "severity": "high",
+        "category": "fan",
+        "canUserReset": true,
+        "immediateAction": "Check flue terminal outside for blockages",
+        "possibleCauses": [
+          "Fan motor failure",
+          "Air pressure switch faulty",
+          "Flue blocked or restricted",
+          "Condensate trap blocked"
+        ],
+        "technicalDetails": {
+          "fanSpeed": "Variable speed - controlled by PCB",
+          "fanVoltage": "230V AC",
+          "airPressureSwitchType": "Differential pressure switch",
+          "expectedPressureDrop": "45-55 Pa across venturi",
+          "fanResistance": "100-500Ω (motor winding)"
+        }
+      },
+      "F4": {
+        "code": "F4",
+        "description": "Flow NTC Thermistor Fault",
+        "severity": "high",
+        "category": "sensor",
+        "canUserReset": true,
+        "immediateAction": "Check thermistor is properly clipped to flow pipe",
+        "possibleCauses": [
+          "Thermistor open circuit",
+          "Thermistor short circuit",
+          "Loose connection",
+          "Thermistor not making contact with pipe"
+        ],
+        "technicalDetails": {
+          "thermistorType": "NTC (Negative Temperature Coefficient)",
+          "resistance_at_0C": "32,650Ω ±5%",
+          "resistance_at_25C": "10,000Ω ±5%",
+          "resistance_at_50C": "3,602Ω ±5%",
+          "resistance_at_85C": "1,080Ω ±5%",
+          "faultConditions": {
+            "openCircuit": ">150kΩ",
+            "shortCircuit": "<500Ω at room temperature"
+          }
+        }
+      },
+      "L2": {
+        "code": "L2",
+        "description": "Ignition Lockout (5 failed attempts)",
+        "severity": "high",
+        "category": "ignition",
+        "canUserReset": true,
+        "immediateAction": "Press reset button. If fault persists, call engineer",
+        "possibleCauses": [
+          "No gas supply",
+          "Gas valve fault",
+          "Ignition electrode faulty",
+          "Spark gap incorrect",
+          "Low gas pressure"
+        ],
+        "technicalDetails": {
+          "lockoutTrigger": "5 consecutive failed ignition attempts",
+          "ignitionSequence": "Fan pre-purge → Spark → Gas valve opens → Flame detect",
+          "sparkGap": "3-4mm between electrode tip and earth",
+          "sparkVoltage": "8-12kV AC (high frequency)",
+          "gasValveOpeningTime": "Approx 2 seconds after spark starts",
+          "gasPressureRequired": "19-21 mbar inlet pressure (natural gas)"
+        }
+      }
+    },
+    
+    "glowworm-ultracom2-30cxi": {
+      "F28": {
+        "code": "F28",
+        "description": "Ignition Fault - No Gas Supply Detected",
+        "severity": "high",
+        "category": "ignition",
+        "canUserReset": true,
+        "immediateAction": "Check gas meter and isolation valve are open",
+        "possibleCauses": [
+          "Gas supply turned off at meter",
+          "Isolation valve closed",
+          "Low gas pressure from network",
+          "Gas valve electrical fault",
+          "Prepayment meter out of credit"
+        ],
+        "technicalDetails": {
+          "detectionMethod": "No flame signal within ignition window",
+          "ignitionAttempts": "3 attempts before lockout",
+          "gasValveVoltage": "230V AC to main valve coil",
+          "gasInletPressure": "20-21 mbar (natural gas)",
+          "workingPressure": "10-12 mbar at burner",
+          "gasValveResistance": "2.8-4.5kΩ (main coil)"
+        }
+      },
+      "F61": {
+        "code": "F61",
+        "description": "PCB Gas Valve Control Fault",
+        "severity": "critical",
+        "category": "pcb",
+        "canUserReset": true,
+        "immediateAction": "Reset boiler - if persists, requires engineer",
+        "possibleCauses": [
+          "PCB internal fault",
+          "Gas valve coil short circuit",
+          "Water damage to PCB",
+          "Power supply fault"
+        ],
+        "technicalDetails": {
+          "faultDetection": "PCB self-diagnostic detects gas valve control circuit abnormality",
+          "pcbVoltageSupply": "230V AC input, multiple DC outputs (5V, 12V, 24V)",
+          "gasValveDriver": "Triac or relay control on PCB",
+          "diagnosticLED": "Red LED flashing pattern indicates fault type",
+          "resetProcedure": "Power off 30 seconds, power on, check fault persists"
+        }
+      },
+      "F73": {
+        "code": "F73",
+        "description": "Pressure Sensor Fault",
+        "severity": "high",
+        "category": "sensor",
+        "canUserReset": true,
+        "immediateAction": "Check pressure sensor wiring and connections",
+        "possibleCauses": [
+          "Pressure sensor disconnected",
+          "Sensor short circuit",
+          "Sensor failed internally",
+          "Wiring damage"
+        ],
+        "technicalDetails": {
+          "sensorType": "Analog pressure transducer",
+          "operatingVoltage": "5V DC supply from PCB",
+          "outputSignal": "0.5-4.5V DC (proportional to pressure)",
+          "pressureRange": "0-4 bar",
+          "outputAt0bar": "0.5V DC",
+          "outputAt1bar": "1.5V DC",
+          "outputAt2bar": "2.5V DC",
+          "faultConditions": {
+            "openCircuit": "Output >4.8V or <0.2V",
+            "shortCircuit": "Output stuck at 0V or 5V"
+          }
+        }
+      }
+    }
+  },
+  
+  "diagnosticProcedures": {
+    "pressure-low": {
+      "id": "pressure-low",
+      "name": "Low System Pressure Diagnostic",
+      "estimatedTime": "30-60 minutes",
+      "toolsRequired": [
+        "Pressure gauge (0-4 bar)",
+        "Leak detection spray or fluid",
+        "Adjustable spanner",
+        "Screwdrivers",
+        "Footpump with pressure gauge (for expansion vessel)"
+      ],
+      "safetyWarnings": [
+        "System may be pressurized - release pressure slowly",
+        "Hot water risk - allow system to cool before draining",
+        "Gas Safe registration required for gas-side work"
+      ],
+      "steps": [
+        {
+          "stepNumber": 1,
+          "title": "Visual Pressure Check",
+          "instruction": "Read the system pressure gauge on the boiler front panel",
+          "expectedResult": "Normal pressure: 1.0-1.5 bar when cold",
+          "actualProblem": "Reading below 0.5 bar triggers F1 fault",
+          "action": "If below 0.5 bar, continue to step 2. If above 1.5 bar, different fault."
+        },
+        {
+          "stepNumber": 2,
+          "title": "Visual Leak Inspection - Boiler Area",
+          "instruction": "Open boiler casing and inspect inside for water",
+          "checkPoints": [
+            "Under pump - common leak point from pump shaft seal",
+            "Heat exchanger connections - compression fittings",
+            "Automatic air vent (AAV) - should be dry, not weeping",
+            "Pressure relief valve pipe (usually copper, exits outside)",
+            "All pipe connections and unions"
+          ],
+          "expectedResult": "All areas should be completely dry",
+          "action": "If wet, identify source and proceed to leak repair"
+        },
+        {
+          "stepNumber": 3,
+          "title": "External Pressure Relief Valve Check",
+          "instruction": "Go outside and locate PRV discharge pipe (usually 15mm copper)",
+          "checkPoints": [
+            "Pipe should terminate outside (cannot be hidden)",
+            "Check for water dripping or staining",
+            "Check ground below pipe for damp patches"
+          ],
+          "expectedResult": "PRV discharge pipe should be bone dry",
+          "technicalInfo": {
+            "prvOpeningPressure": "3.0 bar",
+            "commonCause": "Expansion vessel failure causes pressure rise, PRV opens, then pressure drops when cold"
+          },
+          "action": "If PRV has been discharging, proceed to expansion vessel test (step 8)"
+        },
+        {
+          "stepNumber": 4,
+          "title": "Radiator Valve Inspection",
+          "instruction": "Check ALL radiators in property for leaks",
+          "checkPoints": [
+            "TRV bodies - check compression nuts are tight",
+            "Lockshield valve bodies - check for weeping",
+            "Bleed valves - should be closed tight",
+            "Radiator to valve unions - look for green marks (sign of historic leak)"
+          ],
+          "tool": "Tissue paper - hold against joints to detect minor weeps",
+          "expectedResult": "All joints dry and tight",
+          "action": "Tighten any loose connections using adjustable spanner"
+        },
+        {
+          "stepNumber": 5,
+          "title": "System Repressurise Test",
+          "instruction": "Top up system pressure using filling loop",
+          "procedure": [
+            "Locate filling loop under boiler (two valves, usually blue or black)",
+            "Turn both valves slowly anticlockwise",
+            "Watch pressure gauge rise",
+            "When gauge reaches 1.2 bar, close both valves",
+            "Check both valves are fully closed - try turning clockwise"
+          ],
+          "expectedResult": "Pressure should be 1.2 bar and stable",
+          "criticalCheck": "If pressure immediately drops, ACTIVE LEAK present - do not operate boiler",
+          "action": "Wait 30 minutes and re-check pressure. If stable, proceed to step 6. If dropping, find leak source."
+        },
+        {
+          "stepNumber": 6,
+          "title": "Pressure Stability Test",
+          "instruction": "Monitor pressure over 24 hours",
+          "procedure": [
+            "Record pressure now",
+            "Run heating for 1 hour",
+            "Record pressure when hot",
+            "Let system cool overnight",
+            "Record pressure when cold next day"
+          ],
+          "expectedResults": {
+            "cold_morning": "1.0-1.2 bar",
+            "hot_running": "1.5-2.0 bar (increase of 0.3-0.8 bar is normal)",
+            "cold_next_day": "Should be same as initial cold pressure ±0.1 bar"
+          },
+          "diagnosis": {
+            "pressureDropsWhenCold": "Leak in system - continue leak detection",
+            "pressureRisesExcessively": "Expansion vessel fault - proceed to step 8",
+            "pressureStable": "Fault cleared - monitor for recurrence"
+          }
+        },
+        {
+          "stepNumber": 7,
+          "title": "Leak Detection - Advanced",
+          "instruction": "If leak not visible, use detection methods",
+          "methods": [
+            {
+              "method": "Pressure test",
+              "procedure": "Pressurize system to 2.5 bar and monitor for drops",
+              "equipment": "Pressure gauge"
+            },
+            {
+              "method": "Visual inspection with moisture meter",
+              "procedure": "Check walls, floors, ceilings near pipes",
+              "equipment": "Moisture meter"
+            },
+            {
+              "method": "Thermal imaging",
+              "procedure": "Scan for cold spots indicating leaking water",
+              "equipment": "Thermal camera"
+            },
+            {
+              "method": "Tracer dye",
+              "procedure": "Add fluorescent dye to system, scan with UV light after 24hrs",
+              "equipment": "UV leak detection kit"
+            }
+          ],
+          "commonHiddenLeaks": [
+            "Underfloor heating pipes",
+            "Buried pipes in walls",
+            "Radiators on upper floors with leak dripping to ceiling",
+            "Shower pump connections"
+          ]
+        },
+        {
+          "stepNumber": 8,
+          "title": "Expansion Vessel Test",
+          "instruction": "Test expansion vessel pre-charge pressure",
+          "background": "Vessel absorbs expansion of water as it heats. Contains air bladder at ~1 bar. If bladder fails, no expansion capacity = high pressure = PRV opens = pressure loss when cold.",
+          "procedure": [
+            "Isolate boiler valves (flow and return)",
+            "Drain boiler to 0 bar using drain valve",
+            "Locate vessel Schrader valve (car tyre type) - usually red cap",
+            "Press valve core with screwdriver",
+            "EXPECTED: Air should hiss out",
+            "FAULT: Water comes out = burst diaphragm"
+          ],
+          "testWithPressureGauge": {
+            "equipment": "Tyre pressure gauge",
+            "procedure": "With system at 0 bar, measure vessel pressure",
+            "expectedReading": "0.8-1.0 bar",
+            "lowReading": "Re-pressurize to 1.0 bar using footpump",
+            "zeroReading": "Vessel has lost charge or diaphragm failed"
+          },
+          "action": {
+            "waterFromValve": "Replace expansion vessel",
+            "lowAirPressure": "Re-pressurize to 1.0 bar and retest system",
+            "correctPressure": "Vessel OK - leak must be elsewhere"
+          }
+        },
+        {
+          "stepNumber": 9,
+          "title": "Automatic Air Vent (AAV) Check",
+          "instruction": "Inspect AAV for weeping",
+          "location": "Top of boiler or high point in system",
+          "checkProcedure": [
+            "Remove cap from AAV",
+            "Feel inside cap for moisture",
+            "Inspect AAV body for water marks",
+            "Check thread for white calcium deposits (dried water)"
+          ],
+          "expectedResult": "Completely dry",
+          "faultSign": "Any moisture = AAV passing",
+          "action": "Replace AAV if leaking",
+          "partCost": "£8-15",
+          "timeToReplace": "15 minutes"
+        },
+        {
+          "stepNumber": 10,
+          "title": "Filling Loop Isolation Valve Check",
+          "instruction": "Ensure filling loop valves are fully closed",
+          "commonProblem": "Valves can pass (leak) even when closed",
+          "testProcedure": [
+            "Both filling loop valves should be quarter-turn type or screw-down",
+            "Turn both valves clockwise as far as they go",
+            "If pressure rises when valves supposedly closed = passing valve",
+            "Listen for water trickling sound near filling loop"
+          ],
+          "action": "Replace filling loop if valves passing",
+          "preventativeMaintenance": "Disconnect flexible filling loop when not in use"
+        }
+      ],
+      "diagnosticDecisionTree": {
+        "visibleLeak": "Repair leak, repressurise, monitor",
+        "pRVDripping": "Test expansion vessel - if failed, replace",
+        "expansionVesselFailed": "Replace vessel, repressurise, test",
+        "nOVisibleLeak_PressureDropsSlow": "Use advanced leak detection or accept minor loss and top-up monthly",
+        "nOLeak_PressureStable": "Fault was one-time pressure loss - monitor for recurrence"
+      },
+      "completionChecklist": [
+        "System pressure 1.0-1.5 bar cold",
+        "No visible leaks",
+        "PRV not dripping",
+        "Expansion vessel pre-charge correct",
+        "Filling loop valves closed",
+        "Boiler running without F1 fault",
+        "Pressure stable over 24 hours"
+      ]
+    }
+  },
+  
+  "testingProcedures": {
+    "thermistor-resistance-test": {
+      "component": "NTC Thermistor",
+      "equipment": ["Digital multimeter with Ohms function"],
+      "safety": "Power OFF boiler before testing",
+      "steps": [
+        "Disconnect thermistor from PCB (2-wire connector)",
+        "Set multimeter to Ohms (Ω) range - use 20kΩ or 200kΩ range",
+        "Place multimeter probes on thermistor terminals",
+        "Read resistance value"
+      ],
+      "interpretation": {
+        "at25C": "Should read 10,000Ω ±5% (9,500-10,500Ω)",
+        "at50C": "Should read 3,602Ω ±5%",
+        "openCircuit": "Multimeter shows OL or ∞ = thermistor failed open",
+        "shortCircuit": "Reads 0Ω or <100Ω = thermistor failed short"
+      },
+      "temperatureTest": "Warm thermistor in hand - resistance should DROP steadily (NTC type)",
+      "replacementRequired": "If reads OL, 0Ω, or doesn't change with temperature"
+    },
+    
+    "gas-pressure-test": {
+      "component": "Gas Supply and Valve",
+      "equipment": ["U-gauge manometer", "Gas pressure test kit"],
+      "safety": "Gas Safe registration REQUIRED. Gas testing is regulated work.",
+      "legalRequirement": "Only Gas Safe registered engineers can perform gas tests",
+      "procedure": [
+        "Connect manometer to gas valve test point (remove screw, attach tube)",
+        "Open test point slowly",
+        "Turn boiler on - call for heat",
+        "Read pressure on U-gauge"
+      ],
+      "naturalGas_Readings": {
+        "inletPressure": "20-21 mbar (gas valve inlet)",
+        "minimumAcceptable": "19 mbar",
+        "maximumAcceptable": "25 mbar",
+        "workingPressure": "10-12 mbar (at burner during firing)",
+        "lowPressureCause": "Network supply issue - contact gas supplier"
+      },
+      "lPG_Readings": {
+        "inletPressure": "37 mbar",
+        "workingPressure": "Varies by boiler model - check manual"
+      },
+      "criticalSafety": "If pressure <18 mbar, DO NOT use boiler - gas supplier fault"
+    }
+  },
+  
+  "components": {
+    "pump-grundfos-15-60": {
+      "partNumber": "173551",
+      "manufacturer": "Grundfos",
+      "modelNumber": "UPS 15-60",
+      "usedIn": ["ideal-logic-c30", "ideal-logic2-c30"],
+      "specifications": {
+        "voltage": "230V AC 50Hz",
+        "power": "25-80W (depending on speed)",
+        "speeds": 3,
+        "connections": "1/2 inch BSP threaded",
+        "maxPressure": "10 bar",
+        "maxTemperature": "110°C"
+      },
+      "testing": {
+        "voltageTest": {
+          "expectedVoltage": "230V AC ±10%",
+          "testPoint": "Across pump electrical terminals",
+          "faultIfNoVoltage": "PCB pump output fault or wiring issue"
+        },
+        "resistanceTest": {
+          "expectedResistance": "20-200Ω across terminals (varies by speed setting)",
+          "openCircuit": "OL reading = burned out motor winding",
+          "shortCircuit": "0-5Ω = shorted winding"
+        }
+      },
+      "commonFaults": [
+        "Seized shaft (bearings worn) - manual release stuck",
+        "Capacitor failure (if fitted)",
+        "Motor winding failure - resistance out of range"
+      ],
+      "replacementCost_Trade": "£85-120",
+      "replacementTime": "45 minutes"
+    }
+  }
+}
