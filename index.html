@@ -265,7 +265,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- LOADING SCREEN -->
         <div id="loading-screen">
             <div class="header">
                 <div class="logo">🔧</div>
@@ -275,11 +274,9 @@
             <div class="loading">
                 <p>⏳ Loading database (4 parts)...</p>
                 <p style="font-size: 0.9em; margin-top: 10px; color: rgba(255,255,255,0.6);">This may take a few seconds</p>
-                <div id="load-progress" style="margin-top: 20px; text-align: left; max-width: 400px; margin-left: auto; margin-right: auto;"></div>
             </div>
         </div>
         
-        <!-- ERROR SCREEN -->
         <div id="error-screen" class="hidden">
             <div class="header">
                 <div class="logo">❌</div>
@@ -292,7 +289,6 @@
             </div>
         </div>
         
-        <!-- LOGIN SCREEN -->
         <div id="login-screen" class="hidden">
             <div class="header">
                 <div class="logo">🔧</div>
@@ -309,7 +305,7 @@
                 
                 <div class="alert alert-info">
                     <strong>🎮 Demo Account</strong><br>
-                    Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b9dddcd4d6f9dbd6d0d5dccbdfd0c197dad6d4">[email&#160;protected]</a><br>
+                    Email: demo@boilerfix.com<br>
                     Password: demo1234<br>
                     Gas Safe: 123456
                 </div>
@@ -334,9 +330,7 @@
                 </form>
             </div>
         </div>
-        
-        <!-- APP SCREEN -->
-        <div id="app-screen" class="hidden">
+<div id="app-screen" class="hidden">
             <div class="header">
                 <div class="logo">🔧</div>
                 <h1>BoilerFix AI</h1>
@@ -382,7 +376,7 @@
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    <script>
         console.log('🔧 BoilerFix AI Starting...');
         
         let DATABASE = null;
@@ -390,27 +384,14 @@
         let currentFault = null;
         let currentBoilerId = null;
         
-        // Load database with better error handling
-        console.log('📡 Fetching database.json...');
-        
         // Load database in 4 parts
         const parts = [1, 2, 3, 4];
-        const loadProgress = document.getElementById('load-progress');
-        
         const promises = parts.map(part => 
             fetch(`database-part${part}.json`)
                 .then(r => {
-                    loadProgress.innerHTML += `<div style="color: ${r.ok ? '#4facfe' : '#f5576c'};">Part ${part}: ${r.ok ? 'OK' : 'Failed'} (${r.status})</div>`;
+                    console.log(`Part ${part}: ${r.status}`);
                     if (!r.ok) throw new Error(`Part ${part} not found (${r.status})`);
                     return r.json();
-                })
-                .then(data => {
-                    loadProgress.innerHTML += `<div style="color: #51cf66;">Part ${part}: Parsed ✓</div>`;
-                    return data;
-                })
-                .catch(err => {
-                    loadProgress.innerHTML += `<div style="color: #f5576c;">Part ${part}: ERROR - ${err.message}</div>`;
-                    throw err;
                 })
         );
         
@@ -418,7 +399,6 @@
             .then(dataParts => {
                 console.log('📡 Loaded', dataParts.length, 'database parts');
                 
-                // Combine all parts into one database
                 DATABASE = {
                     version: "4.0",
                     lastUpdated: "2025-02-01",
@@ -440,18 +420,15 @@
                 console.log('📊 Total boilers:', boilerCount);
                 console.log('📊 Total codes:', codeCount);
                 
-                // Hide loading, show login
                 document.getElementById('loading-screen').classList.add('hidden');
                 document.getElementById('login-screen').classList.remove('hidden');
                 
-                // Update status
                 document.getElementById('db-status').textContent = 
                     `${boilerCount} Boilers • ${codeCount} Fault Code Groups Ready`;
             })
             .catch(error => {
                 console.error('❌ Database load failed:', error);
                 
-                // Show error screen
                 document.getElementById('loading-screen').classList.add('hidden');
                 document.getElementById('error-screen').classList.remove('hidden');
                 document.getElementById('error-detail').innerHTML = 
@@ -461,7 +438,6 @@
                     `• Files are valid JSON format<br>` +
                     `• GitHub Pages has finished deploying`;
             });
-        
         
         function login(event) {
             event.preventDefault();
@@ -484,13 +460,12 @@
                 document.getElementById('user-gassafe').textContent = gasSafe;
                 
                 const boilerCount = Object.keys(DATABASE.boilers).length;
-                const codeCount = Object.keys(DATABASE.faultCodes).length;
                 document.getElementById('app-subtitle').textContent = 
-                    `${boilerCount} Boilers • ${codeCount} Fault Code Groups`;
+                    `${boilerCount} Boilers Ready`;
                 
                 populateBoilers();
             } else {
-                alert('Invalid credentials. Use: demo@boilerfix.com / demo1234');
+                alert('Invalid credentials');
             }
             
             return false;
@@ -503,12 +478,6 @@
         }
         
         function populateBoilers() {
-            if (!DATABASE || !DATABASE.boilers) {
-                console.error('❌ No boiler data available');
-                alert('Database error: No boiler data found');
-                return;
-            }
-            
             const select = document.getElementById('boiler-select');
             select.innerHTML = '<option value="">-- Select Boiler --</option>';
             
@@ -525,7 +494,7 @@
                 select.appendChild(option);
             }
             
-            console.log('✅ Populated', boilers.length, 'boilers into dropdown');
+            console.log('✅ Populated', boilers.length, 'boilers');
         }
         
         function loadFaultCodes() {
@@ -542,14 +511,11 @@
             
             const codes = DATABASE.faultCodes[boilerId];
             if (!codes) {
-                console.warn('⚠️ No fault codes found for:', boilerId);
                 faultSelect.innerHTML = '<option value="">-- No fault codes available --</option>';
                 return;
             }
             
-            const sortedCodes = Object.entries(codes).sort((a, b) => {
-                return a[0].localeCompare(b[0]);
-            });
+            const sortedCodes = Object.entries(codes).sort((a, b) => a[0].localeCompare(b[0]));
             
             for (const [code, fault] of sortedCodes) {
                 const option = document.createElement('option');
@@ -558,7 +524,7 @@
                 faultSelect.appendChild(option);
             }
             
-            console.log('✅ Loaded', sortedCodes.length, 'fault codes for', boilerId);
+            console.log('✅ Loaded', sortedCodes.length, 'fault codes');
         }
         
         function showDiagnostic() {
@@ -580,7 +546,7 @@
                 
                 <div class="diagnostic-section">
                     <h3>⚠️ Possible Causes</h3>
-                    <p>${(fault.possibleCauses || []).join(' • ') || 'No causes listed'}</p>
+                    <p>${(fault.possibleCauses || []).join(' • ')}</p>
                 </div>
                 
                 <div class="diagnostic-section">
@@ -590,7 +556,7 @@
                 
                 <div class="diagnostic-section">
                     <h3>✅ Solution</h3>
-                    <p>${fault.solution || 'Contact qualified engineer'}</p>
+                    <p>${fault.solution}</p>
                 </div>
             `;
             
@@ -598,18 +564,14 @@
         }
         
         function showComponentTest() {
-            if (!currentFault) {
-                alert('Please view diagnostic first');
+            if (!currentFault || !currentFault.componentTest) {
+                alert('No component test available');
                 return;
             }
             
             const test = currentFault.componentTest;
-            if (!test) {
-                alert('No component test available for this fault code');
-                return;
-            }
-            
             const fault = currentFault;
+            
             const severityBadge = `<span class="badge badge-${fault.severity}">${fault.severity.toUpperCase()}</span>`;
             
             let html = `
@@ -635,7 +597,7 @@
                     
                     <div class="test-detail">
                         <div class="test-label">📝 Testing Procedure</div>
-                        <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; color: #4facfe; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px;">${test.procedure}</pre>
+                        <pre style="white-space: pre-wrap; font-family: monospace; color: #4facfe;">${test.procedure}</pre>
                     </div>
                     
                     <div class="test-detail">
@@ -657,4 +619,11 @@
         
         function resetDiagnostic() {
             document.getElementById('output').innerHTML = `
-                <h2 style="color: #667eea;">Ready to Diagnos
+                <h2 style="color: #667eea;">Ready to Diagnose</h2>
+                <p style="color: rgba(255,255,255,0.7);">Select a boiler and fault code above</p>
+            `;
+            currentFault = null;
+        }
+    </script>
+</body>
+</html>
