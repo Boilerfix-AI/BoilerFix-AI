@@ -627,43 +627,57 @@
             const boiler = DATABASE.boilers[boilerId];
             
             let html = `
-                <h2 style="color: white;">📖 ${boiler.manufacturer} ${boiler.model} Manuals</h2>
+                <h2 style="color: white;">📖 ${boiler.manufacturer} ${boiler.model} - Find Manuals</h2>
                 
                 <div class="diagnostic-section">
-                    <h3>🔗 Official Manufacturer Manuals</h3>
-                    <p>Access installation, service, and user manuals directly from the manufacturer:</p>
-                    <a href="${boiler.manualURL}" target="_blank" rel="noopener" 
-                       class="btn-primary" style="display: block; text-decoration: none; text-align: center; margin: 15px 0;">
-                        🏭 ${boiler.manufacturer} Official Manual Library
+                    <h3>🎯 Best Option: Google Site Search</h3>
+                    <p>Search the manufacturer's website for this exact model:</p>
+                    <a href="${boiler.manualGoogleURL}" target="_blank" rel="noopener" 
+                       class="btn-primary" style="display: block; text-decoration: none; text-align: center; margin: 15px 0; background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);">
+                        🔎 Find ${boiler.model} Manual on ${boiler.manufacturer} Site
+                    </a>
+                    <p style="font-size: 0.9em; color: rgba(255,255,255,0.7);">
+                        <strong>💡 Tip:</strong> This searches only the official manufacturer website for your exact boiler model.
+                    </p>
+                </div>
+                
+                <div class="diagnostic-section">
+                    <h3>🏭 Browse All ${boiler.manufacturer} Manuals</h3>
+                    <p>Search through the manufacturer's complete manual library:</p>
+                    <a href="${boiler.manualSearchURL}" target="_blank" rel="noopener" 
+                       class="btn-success" style="display: block; text-decoration: none; text-align: center; margin: 15px 0;">
+                        📚 ${boiler.manufacturer} Manual Library
                     </a>
                 </div>
                 
                 <div class="diagnostic-section">
-                    <h3>📚 Free Boiler Manuals Archive</h3>
-                    <p>Browse free downloadable PDF manuals:</p>
+                    <h3>📄 Free PDF Archive</h3>
+                    <p>Browse free downloadable manuals from freeboilermanuals.com:</p>
                     <a href="${boiler.freeManualURL}" target="_blank" rel="noopener" 
                        class="btn-success" style="display: block; text-decoration: none; text-align: center; margin: 15px 0;">
-                        📄 Free ${boiler.manufacturer} Manuals
+                        💾 Free ${boiler.manufacturer} PDFs
                     </a>
                 </div>
                 
                 <div class="diagnostic-section">
-                    <h3>🔍 Search Online</h3>
-                    <p>Can't find the manual? Search Google:</p>
-                    <a href="https://www.google.com/search?q=${encodeURIComponent(boiler.manualSearchText + ' PDF')}" 
+                    <h3>🌐 General Search</h3>
+                    <p>Can't find it? Try a broader Google search:</p>
+                    <a href="https://www.google.com/search?q=${encodeURIComponent(boiler.manualSearchText)}" 
                        target="_blank" rel="noopener" 
-                       class="btn-primary" style="display: block; text-decoration: none; text-align: center; margin: 15px 0; background: linear-gradient(135deg, #4285f4 0%, #34a853 100%);">
-                        🔎 Search Google for Manual
+                       class="btn-primary" style="display: block; text-decoration: none; text-align: center; margin: 15px 0;">
+                        🔍 Search: "${boiler.manualSearchText}"
                     </a>
                 </div>
                 
                 <div class="alert alert-info" style="margin-top: 20px;">
-                    <strong>💡 Tip:</strong> Save the manual PDF to your device for offline access during service calls.
+                    <strong>📥 Recommended:</strong> Save the manual PDF to your device for offline access during service calls.
                 </div>
             `;
             
             document.getElementById('output').innerHTML = html;
         }
+
+
         
         function resetDiagnostic() {
             document.getElementById('output').innerHTML = `
