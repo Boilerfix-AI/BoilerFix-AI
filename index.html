@@ -844,10 +844,11 @@
                 alert('Enter valid readings');
                 return;
             }
-            const vol = (end - start) * 0.0283168;
-            const kw = (vol / 120) * 39.3 * 1.02264 / 3.6;
+            const volFt3 = end - start;
+            // Correct formula: ft³ × 0.00926 for 2 minute test
+            const kw = volFt3 * 0.00926;
             document.getElementById('imp-kw').textContent = kw.toFixed(2) + ' kW';
-            document.getElementById('imp-det').innerHTML = 'Volume: '+(end-start).toFixed(2)+' ft³';
+            document.getElementById('imp-det').innerHTML = 'Volume: '+volFt3.toFixed(2)+' ft³ in 2 minutes';
             document.getElementById('imp-res').classList.remove('hidden');
         }
         
@@ -857,10 +858,10 @@
                 alert('Enter valid seconds');
                 return;
             }
-            const vol = 0.002;
-            const kw = (vol / sec) * 39.3 * 1.02264 / 3.6;
+            // Correct formula for 2L dial: kW = 80.31 ÷ seconds
+            const kw = 80.31 / sec;
             document.getElementById('met-kw').textContent = kw.toFixed(2) + ' kW';
-            document.getElementById('met-det').innerHTML = 'Time: '+sec+' sec';
+            document.getElementById('met-det').innerHTML = 'Time: '+sec+'s (2L dial)';
             document.getElementById('met-res').classList.remove('hidden');
         }
         
